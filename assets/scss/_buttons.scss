@@ -2,7 +2,7 @@
 .btn {
   font-size: 1rem;
   font-family: $font-secondary;
-  text-transform: capitalize;
+  //text-transform: capitalize;
   padding: .8em 2em;
   border-radius: 0;
   border: 1px solid;
@@ -63,7 +63,7 @@
 
 
 /**! ----- Button Hover ---- **/
-.btn:after, 
+.btn:after,
 .btn:before {
   content: '';
   display: block;
