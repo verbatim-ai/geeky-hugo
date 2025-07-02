@@ -1,105 +1,116 @@
 {{ define "main" }}
 
-<!-- checking blog -->
-{{ if or (eq .Section "post") (eq .Section "posts") (eq .Section "blog") (eq
-.Section "blogs") (eq .Section "news") (eq .Section "categories") (eq .Section
-"tags") }}
+  <!-- checking blog -->
+  {{ if or (eq .Section "post") (eq .Section "posts") (eq .Section "blog") (eq
+    .Section "blogs") (eq .Section "news") (eq .Section "categories") (eq .Section
+    "tags") }}
 
-<!--=================== section start ===================-->
-<section class="section-sm">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-8 mb-5 mb-lg-0">
-        <!-- image path -->
-        {{ $imagePath:= .Params.image }} {{ if $imagePath }}
-        <div class="position-relative">
-          {{ partial "image.html" (dict "Src" $imagePath "Alt" .Title "Class"
-          "img-fluid mb-5 w-100 rounded-4" ) }}
-          <ul class="list-inline card-badge">
-            {{ range .Params.categories }}
-            <li class="list-inline-item">
-              <a
-                href="{{`categories/` | relLangURL}}{{. | lower | urlize}}"
-                class="badge badge-primary py-1"
-                >{{. | title}}</a
-              >
-            </li>
+    <!--=================== section start ===================-->
+    <section class="section-sm">
+
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mb-5 mb-lg-0">
+            <!-- image path -->
+            {{ $imagePath := .Params.image }} {{ if $imagePath }}
+            <div class="position-relative">
+              {{ partial "image.html" (dict "Src" $imagePath "Alt" .Title "Class"
+                "img-fluid mb-5 w-100 rounded-4") }}
+              <ul class="list-inline card-badge">
+                {{ range .Params.categories }}
+                  <li class="list-inline-item">
+                    <a
+                      href="{{ `categories/` | relLangURL }}{{ . | lower | urlize }}"
+                      class="badge badge-primary py-1"
+                    >{{ . | title }}</a
+                    >
+                  </li>
+                {{ end }}
+              </ul>
+            </div>
+
+          {{ else }} {{ range .Params.categories }}
+            <a
+              href="{{ `categories/` | relLangURL }}{{ . | lower | urlize }}"
+              class="badge badge-primary mb-4 d-inline-block"
+            >{{ . | title }}</a
+            >
+          {{ end }} {{ end }}
+            <h1 class="h3 mb-4">{{ .Title | markdownify }}</h1>
+            <ul class="list-inline card-meta d-flex align-items-center mb-4">
+              <li class="list-inline-item d-flex align-items-center">
+                <i class="fas fa-user me-2"></i>
+                <a
+                  href="{{ `about` | relLangURL }}">{{ site.Params.author }}</a>
+              </li>
+              <li class="list-inline-item d-flex align-items-center">
+                <i class="fas fa-calendar me-2"></i>
+                <span>{{ time.Format ":date_long" .PublishDate }}</span>
+              </li>
+            </ul>
+            <div class="content drop-cap">{{ .Content }}</div>
+            <!-- Disqus comments -->
+            {{ if site.Config.Services.Disqus.Shortname }}
+              <div class="mt-20">
+                {{ template "_internal/disqus.html" . }}
+              </div>
             {{ end }}
-          </ul>
-        </div>
-        {{ else }} {{ range .Params.categories }}
-        <a
-          href="{{`categories/` | relLangURL}}{{. | lower | urlize}}"
-          class="badge badge-primary mb-4 d-inline-block"
-          >{{. | title}}</a
-        >
-        {{ end }} {{ end }}
-        <h1 class="h3 mb-4">{{.Title | markdownify}}</h1>
-        <ul class="list-inline card-meta d-flex align-items-center mb-4">
-          <li class="list-inline-item d-flex align-items-center">
-            <i class="fas fa-user me-2"></i>
-            <a href="{{`about` | relLangURL}}">{{site.Params.author}}</a>
-          </li>
-          <li class="list-inline-item d-flex align-items-center">
-            <i class="fas fa-calendar me-2"></i>
-            <span>{{ time.Format ":date_long" .PublishDate }}</span>
-          </li>
-        </ul>
-        <div class="content drop-cap">{{.Content}}</div>
-        <!-- Disqus comments -->
-        {{ if site.Config.Services.Disqus.Shortname }}
-        <div class="mt-20">
-          {{ template "_internal/disqus.html" . }}
-        </div>
-      {{ end }}
-        
-      </div>
-      <!-- sidebar widgets -->
-      <aside class="col-lg-4">
-        {{ $widget:= site.Params.widgets.sidebar }} {{ partialCached
-        "widgets/widget-wrapper" ( dict "Widgets" $widget "Scope" . )}}
-      </aside>
-    </div>
-  </div>
-</section>
-<!--=================== section end ===================-->
 
-<!--=================== section start ===================-->
-<section class="section-sm pt-0">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <div class="section-title">
-          <h2 class="h4 title-border">{{ site.Params.related_posts }}</h2>
+            <div class="content"><hr>
+              <blockquote><p>Vous n'avez pas les solutions ou vous ne savez pas par où commencer ?<br>Parlons maintenant de l'IA dans votre organisation.</p></blockquote>
+              Partageons la <a href="/adn">même vision</a> et construisons ensemble <a href="/missions">vos futurs projets</a> avec la puissante de l' <a href="/ia">IA générative</a>.
+              <div style="margin-top:20px;text-align:center"><a href="/calendar" class="btn btn-primary active">Discutons-en maintenant</a></div>
+              <hr>
+            </div>
+          </div>
+
+          <!-- sidebar widgets -->
+          <aside class="col-lg-4">
+            {{ $widget := site.Params.widgets.sidebar }} {{ partialCached
+            "widgets/widget-wrapper" (dict "Widgets" $widget "Scope" .) }}
+          </aside>
         </div>
       </div>
-    </div>
+    </section>
+    <!--=================== section end ===================-->
 
-    <!-- related post -->
-    <div class="row">
-      {{ $related := (where site.RegularPages "Section" "in"
-      site.Params.mainSections) | intersect (where site.RegularPages ".Title"
-      "!=" .Title) | union (site.RegularPages.Related . ) }} {{ range first 3
-      $related }}
-      <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">{{ .Render "post" }}</div>
-      {{ end }}
-    </div>
-  </div>
-</section>
-<!--=================== section end ===================-->
+    <!--=================== section start ===================-->
+    <section class="section-sm pt-0">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="section-title">
+              <h2 class="h4 title-border">{{ site.Params.related_posts }}</h2>
+            </div>
+          </div>
+        </div>
 
-<!-- regular page -->
-{{ else }} {{ partial "page-header.html" . }}
-<section class="section-sm">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-10 mx-auto">
-        <div class="content">{{.Content}}</div>
+        <!-- related post -->
+        <div class="row">
+          {{ $related := (where site.RegularPages "Section" "in"
+            site.Params.mainSections) | intersect (where site.RegularPages ".Title"
+            "!=" .Title) | union (site.RegularPages.Related .) }} {{ range first 3
+          $related }}
+          <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">{{ .Render "post" }}</div>
+        {{ end }}
+        </div>
       </div>
-    </div>
-  </div>
-</section>
-{{ end }}
-<!-- /regular page -->
+    </section>
+    <!--=================== section end ===================-->
+
+    <!-- regular page -->
+  {{ else }} {{ partial "page-header.html" . }}
+    <section class="section-sm">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 mx-auto">
+            <div class="content">{{ .Content }}</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  {{ end }}
+  <!-- /regular page -->
+
 
 {{ end }}
